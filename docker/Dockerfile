@@ -93,6 +93,11 @@ RUN export SWIG_ROOT=swig-4.0.2 && \
     manylinux-entrypoint /build_scripts/build-swig.sh
 
 
+FROM build_base AS build_gcc
+COPY build_scripts/build-gcc.sh /build_scripts/
+RUN manylinux-entrypoint /build_scripts/build-gcc.sh
+
+
 FROM build_base AS build_cpython
 COPY build_scripts/build-sqlite3.sh /build_scripts/
 RUN export SQLITE_AUTOCONF_ROOT=sqlite-autoconf-3360000 && \
@@ -149,6 +154,7 @@ RUN hardlink -cv /opt/_internal
 FROM runtime_base
 COPY --from=build_git /manylinux-rootfs /
 COPY --from=build_swig /manylinux-rootfs /
+COPY --from=build_gcc /manylinux-rootfs /
 COPY --from=build_cpython /manylinux-rootfs /
 COPY --from=all_python /opt/_internal /opt/_internal/
 COPY build_scripts/finalize.sh \

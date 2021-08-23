@@ -44,7 +44,7 @@ fi
 # configure with hardening options only for the interpreter & stdlib C extensions
 # do not change the default for user built extension (yet?)
 ./configure \
-	CFLAGS_NODIST="${MANYLINUX_CFLAGS} ${MANYLINUX_CPPFLAGS}" \
+	CFLAGS_NODIST="${MANYLINUX_CFLAGS} ${MANYLINUX_CPPFLAGS} -fPIC" \
 	LDFLAGS_NODIST="${MANYLINUX_LDFLAGS}" \
 	--prefix=${PREFIX} --disable-shared --with-ensurepip=no > /dev/null
 make > /dev/null
@@ -54,9 +54,6 @@ if [ "${AUDITWHEEL_POLICY}" == "manylinux2010" ]; then
 fi
 popd
 rm -rf Python-${CPYTHON_VERSION} Python-${CPYTHON_VERSION}.tgz Python-${CPYTHON_VERSION}.tgz.asc
-
-# we don't need libpython*.a, and they're many megabytes
-find ${PREFIX} -name '*.a' -print0 | xargs -0 rm -f
 
 # We do not need precompiled .pyc and .pyo files.
 clean_pyc ${PREFIX}
